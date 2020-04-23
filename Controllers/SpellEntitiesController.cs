@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ORM_example.Entity;
+using ORM_example.Dto;
 
 namespace ORM_example.Controllers
 {
@@ -26,12 +27,9 @@ namespace ORM_example.Controllers
         // GET: api/SpellEntities
         [Authorize]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<string>>> GetspellEntities()
+        public ActionResult<IEnumerable<string>> GetspellEntities()
         {
-            // return await _context.spellEntities.ToListAsync();
-
-            //Join пока-что бесполезен
-            var spells = _context.spellEntities.ToList();
+            var spells = _context.spell.ToList();
 
             return spells.Select((spell, index) => spell.name).ToList();
         }
@@ -39,11 +37,9 @@ namespace ORM_example.Controllers
         // GET: api/SpellEntities/5
         [Authorize]
         [HttpGet("{id}")]
-        public async Task<ActionResult<SpellEntity>> GetSpellEntity(int id)
+        public ActionResult<SpellEntity> GetSpellEntity(int id)
         {
-            //var spellEntity = await _context.spellEntities.FindAsync(id);
-
-            var spells = _context.spellEntities.ToList();
+            var spells = _context.spell.ToList();
 
             var spell = spells.Where(tmp => tmp.id == id).Single();
 
@@ -55,23 +51,46 @@ namespace ORM_example.Controllers
             return spell;
         }
 
+        // GET: api/SpellEntities/element/1
+        [Authorize]
+        [HttpGet("element/{elementId}")]
+        public ActionResult<IEnumerable<SpellEntity>> GetSpellsOfCertainElement(int elemendId)
+        {
+            var spells = _context.spell.ToList();
+
+            return Ok(spells.Select(tmp => tmp.elementId = elemendId).ToList());
+        }
+
+        [Authorize]
+        [HttpGet("extended")]
+        public ActionResult<IEnumerable<ExtendedSpellDto>>GetExtendedSpellInfo()
+        {
+            var spells = _context.spell.ToList();
+            var spellElements = _context.spellElement.ToList();
+
+            var extendedSpellDtos = spells.Join(spellElements, spell => spell.elementId, spellElement => spellElement.id, 
+                (spell, spellElement) => new ExtendedSpellDto(spell, spellElement)).ToList();
+
+            return Ok(extendedSpellDtos);
+        }
+
         // PUT: api/SpellEntities/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [Authorize(Roles = "admin")]
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutSpellEntity(int id, SpellEntity spellEntity)
+        public IActionResult PutSpellEntity(int id, SpellEntity spell)
         {
-            if (id != spellEntity.id)
+            if (id != spell.id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(spellEntity).State = EntityState.Modified;
+            _context.Entry(spell).State = EntityState.Modified;
 
             try
             {
-                await _context.SaveChangesAsync();
+                _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -93,34 +112,34 @@ namespace ORM_example.Controllers
         // more details see https://aka.ms/RazorPagesCRUD.
         [Authorize(Roles = "admin")]
         [HttpPost]
-        public async Task<ActionResult<SpellEntity>> PostSpellEntity(SpellEntity spellEntity)
+        public ActionResult<SpellEntity> PostSpellEntity(SpellEntity spell)
         {
-            _context.spellEntities.Add(spellEntity);
-            await _context.SaveChangesAsync();
+            _context.spell.Add(spell);
+            _context.SaveChanges();
 
             //return CreatedAtAction("GetSpellEntity", new { id = spellEntity.id }, spellEntity);
-            return CreatedAtAction(nameof(GetSpellEntity), new { id = spellEntity.id }, spellEntity);
+            return Ok(spell);
         }
 
         // DELETE: api/SpellEntities/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<SpellEntity>> DeleteSpellEntity(int id)
+        public ActionResult<SpellEntity> DeleteSpellEntity(int id)
         {
-            var spellEntity = await _context.spellEntities.FindAsync(id);
-            if (spellEntity == null)
+            var spell = _context.spell.Find(id);
+            if (spell == null)
             {
                 return NotFound();
             }
 
-            _context.spellEntities.Remove(spellEntity);
-            await _context.SaveChangesAsync();
+            _context.spell.Remove(spell);
+            _context.SaveChanges();
 
-            return spellEntity;
+            return Ok(spell);
         }
 
         private bool SpellEntityExists(int id)
         {
-            return _context.spellEntities.Any(e => e.id == id);
+            return _context.spell.Any(e => e.id == id);
         }
     }
 }

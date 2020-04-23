@@ -24,21 +24,27 @@ namespace ORM_example.Controllers
         // GET: api/SpellElement
         [Authorize]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<string>>> GetSpellElementEntity()
+        public ActionResult<IEnumerable<string>> GetSpellElementEntity()
         {
-            var spellElements = _context.SpellElementEntity.ToList();
+            var spellElements = _context.spellElement.ToList();
 
             return spellElements.Select(spellElement => spellElement.name).ToList();
         }
 
+        // GET: api/SpellElement/extended
         [Authorize]
+        [HttpGet("extended")]
+        public ActionResult<IEnumerable<SpellElementEntity>> GetExtendedSpellElementList()
+        {
+            return Ok(_context.spellElement.ToList());
+        }
+
         // GET: api/SpellElement/5
         [HttpGet("{id}")]
         [Authorize(Roles = "admin")]
-        public async Task<ActionResult<SpellElementEntity>> GetSpellElementEntity(int id)
+        public ActionResult<SpellElementEntity> GetSpellElementEntity(int id)
         {
-            var spellElements = await _context.SpellElementEntity.ToListAsync();
-            //var spellElements = _context.SpellElementEntity.ToList();
+            var spellElements =  _context.spellElement.ToList();
             var spellElement = spellElements.FirstOrDefault(tmp => tmp.id == id);
 
             if (spellElement == null)
@@ -54,18 +60,18 @@ namespace ORM_example.Controllers
         // more details see https://aka.ms/RazorPagesCRUD.
         [Authorize(Roles = "admin")]
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutSpellElementEntity(int id, SpellElementEntity spellElementEntity)
+        public IActionResult PutSpellElementEntity(int id, SpellElementEntity spellElement)
         {
-            if (id != spellElementEntity.id)
+            if (id != spellElement.id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(spellElementEntity).State = EntityState.Modified;
+            _context.Entry(spellElement).State = EntityState.Modified;
 
             try
             {
-                await _context.SaveChangesAsync();
+                _context.SaveChanges();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -87,34 +93,34 @@ namespace ORM_example.Controllers
         // more details see https://aka.ms/RazorPagesCRUD.
         [Authorize(Roles = "admin")]
         [HttpPost]
-        public async Task<ActionResult<SpellElementEntity>> PostSpellElementEntity(SpellElementEntity spellElementEntity)
+        public ActionResult<SpellElementEntity> PostSpellElementEntity(SpellElementEntity spellElement)
         {
-            _context.SpellElementEntity.Add(spellElementEntity);
-            await _context.SaveChangesAsync();
+            _context.spellElement.Add(spellElement);
+            _context.SaveChanges();
 
-            return CreatedAtAction("GetSpellElementEntity", new { id = spellElementEntity.id }, spellElementEntity);
+            return Ok(spellElement);
         }
 
         // DELETE: api/SpellElement/5
         [HttpDelete("{id}")]
         [Authorize(Roles = "admin")]
-        public async Task<ActionResult<SpellElementEntity>> DeleteSpellElementEntity(int id)
+        public ActionResult<SpellElementEntity> DeleteSpellElementEntity(int id)
         {
-            var spellElementEntity = await _context.SpellElementEntity.FindAsync(id);
-            if (spellElementEntity == null)
+            var spellElement = _context.spellElement.Find(id);
+            if (spellElement == null)
             {
                 return NotFound();
             }
 
-            _context.SpellElementEntity.Remove(spellElementEntity);
-            await _context.SaveChangesAsync();
+            _context.spellElement.Remove(spellElement);
+            _context.SaveChanges();
 
-            return spellElementEntity;
+            return Ok(spellElement);
         }
 
         private bool SpellElementEntityExists(int id)
         {
-            return _context.SpellElementEntity.Any(e => e.id == id);
+            return _context.spellElement.Any(e => e.id == id);
         }
     }
 }

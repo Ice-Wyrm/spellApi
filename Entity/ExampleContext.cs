@@ -13,7 +13,7 @@ namespace ORM_example.Entity
         public ExampleContext(DbContextOptions<ExampleContext> options) : base(options)
         {
         }
-        public DbSet<SpellEntity> spellEntities {get; set;}
-        public DbSet<ORM_example.Entity.SpellElementEntity> SpellElementEntity { get; set; }
+        public DbSet<SpellEntity> spell {get; set;}
+        public DbSet<SpellElementEntity> spellElement { get; set; }
     }
 }
