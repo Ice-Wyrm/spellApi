@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace ORM_example.Entity
 {
-    public class SpellElementEntity : AbstractInterface
+    public class SpellElementEntity
     {
-        int AbstractInterface.id { get; set; }
-        string AbstractInterface.name { get; set; }
+        public int id { get; set; }
+        public string name { get; set; }
     }
 }

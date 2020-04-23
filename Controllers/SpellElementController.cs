@@ -35,7 +35,7 @@ namespace ORM_example.Controllers
         {
             var spellElements = await _context.SpellElementEntity.ToListAsync();
             //var spellElements = _context.SpellElementEntity.ToList();
-            var spellElement = spellElements.FirstOrDefault(spellElement => spellElement.id == id);
+            var spellElement = spellElements.FirstOrDefault(tmp => tmp.id == id);
 
             if (spellElement == null)
             {

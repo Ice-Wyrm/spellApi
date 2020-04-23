@@ -11,6 +11,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Logging;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using ORM_example.Entity;
 
 namespace ORM_example
@@ -27,27 +30,42 @@ namespace ORM_example
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<ExampleContext>(opt => opt.UseInMemoryDatabase("ORM-example"));
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters()
+                {
+                    ValidateIssuer = true,
+                    ValidIssuer = AuthOptions.ISSUER,
+
+                    ValidateAudience = true,
+                    ValidAudience = AuthOptions.AUDIENCE,
+
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(),
+
+                    ValidateLifetime = true,
+                };
+            }
+            );
             services.AddControllers();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
+            app.UseDeveloperExceptionPage();
 
-            app.UseHttpsRedirection();
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
+                endpoints.MapDefaultControllerRoute();
             });
         }
     }

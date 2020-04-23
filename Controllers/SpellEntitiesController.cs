@@ -42,7 +42,7 @@ namespace ORM_example.Controllers
 
             var spells = _context.spellEntities.ToList();
 
-            var spell = spells.Where(spell => spell.id == id).Single();
+            var spell = spells.Where(tmp => tmp.id == id).Single();
 
             if (spell == null)
             {
