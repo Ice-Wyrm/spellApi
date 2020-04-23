@@ -41,7 +41,7 @@ namespace ORM_example.Controllers
         {
             var spells = _context.spell.ToList();
 
-            var spell = spells.Where(tmp => tmp.id == id).Single();
+            var spell = spells.FirstOrDefault(tmp => tmp.id == id); ;
 
             if (spell == null)
             {
