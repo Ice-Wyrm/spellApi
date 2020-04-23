@@ -11,7 +11,7 @@ namespace ORM_example.Entity
     {
         public const string ISSUER = "Denis"; // издатель токена
         public const string AUDIENCE = "Client"; // потребитель токена
-        const string KEY = "greedisgood";   // ключ для шифрации
+        const string KEY = "longKeyNeededInOrderToAvoidException";   // ключ для шифрации
         public const int LIFETIME = 1; // время жизни токена - 1 минута
         public static SymmetricSecurityKey GetSymmetricSecurityKey()
         {

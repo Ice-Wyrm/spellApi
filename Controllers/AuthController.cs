@@ -11,11 +11,11 @@ namespace ORM_example.Controllers
 {
     public class AuthController : Controller
     {
-        // тестовые данные вместо использования базы данных
-        private List<PersonEntity> people = new List<PersonEntity>
+        // users
+        private List<PersonEntity> users = new List<PersonEntity>
         {
-            new PersonEntity {Login="admin@gmail.com", Password="12345", Role = "admin" },
-            new PersonEntity { Login="qwerty@gmail.com", Password="55555", Role = "user" }
+            new PersonEntity {Login="admin", Password="12345", Role = "admin" },
+            new PersonEntity { Login="user", Password="55555", Role = "user" }
         };
 
         [HttpPost("/token")]
@@ -26,6 +26,7 @@ namespace ORM_example.Controllers
             {
                 return BadRequest(new { errorText = "Invalid username or password." });
             }
+
 
             var now = DateTime.UtcNow;
             // создаем JWT-токен
@@ -49,7 +50,7 @@ namespace ORM_example.Controllers
 
         private ClaimsIdentity GetIdentity(string username, string password)
         {
-            PersonEntity person = people.FirstOrDefault(x => x.Login == username && x.Password == password);
+            PersonEntity person = users.FirstOrDefault(x => x.Login == username && x.Password == password);
             if (person != null)
             {
                 var claims = new List<Claim>

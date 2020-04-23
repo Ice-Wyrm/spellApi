@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +22,7 @@ namespace ORM_example.Controllers
         }
 
         // GET: api/SpellElement
+        [Authorize]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<string>>> GetSpellElementEntity()
         {
@@ -29,8 +31,10 @@ namespace ORM_example.Controllers
             return spellElements.Select(spellElement => spellElement.name).ToList();
         }
 
+        [Authorize]
         // GET: api/SpellElement/5
         [HttpGet("{id}")]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult<SpellElementEntity>> GetSpellElementEntity(int id)
         {
             var spellElements = await _context.SpellElementEntity.ToListAsync();
@@ -48,6 +52,7 @@ namespace ORM_example.Controllers
         // PUT: api/SpellElement/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
+        [Authorize(Roles = "admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutSpellElementEntity(int id, SpellElementEntity spellElementEntity)
         {
@@ -80,6 +85,7 @@ namespace ORM_example.Controllers
         // POST: api/SpellElement
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
+        [Authorize(Roles = "admin")]
         [HttpPost]
         public async Task<ActionResult<SpellElementEntity>> PostSpellElementEntity(SpellElementEntity spellElementEntity)
         {
@@ -91,6 +97,7 @@ namespace ORM_example.Controllers
 
         // DELETE: api/SpellElement/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult<SpellElementEntity>> DeleteSpellElementEntity(int id)
         {
             var spellElementEntity = await _context.SpellElementEntity.FindAsync(id);
